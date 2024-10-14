@@ -7,7 +7,7 @@ import Events from "./Events";
 import Profile from "./Profile";
 import Home from "./Home";
 import Meals from "./Meals";
-import Plans from "./Plans";
+import Schedules from "./Schedules";
 import burnoutReducer, { updateState } from "../burnoutReducer";
 import PrivateRoute from "./PrivateRoute";
 import useToken from "./authentication/useToken";
@@ -57,8 +57,8 @@ function Router() {
       <PrivateRoute state={state} dispatch={dispatch} path="/meals">
         <Meals state={state} dispatch={dispatch} />
       </PrivateRoute>
-      <PrivateRoute state={state} dispatch={dispatch} path="/plans">
-        <Plans state={state} dispatch={dispatch} />
+      <PrivateRoute state={state} dispatch={dispatch} path="/schedules">
+        <Schedules state={state} dispatch={dispatch} />
       </PrivateRoute>
       <PrivateRoute state={state} dispatch={dispatch} path="/events">
         <Events state={state} dispatch={dispatch} />

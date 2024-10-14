@@ -19,7 +19,7 @@ const mainPages = {
   Home: '/',
   Events: '/events',
   'My Meals': '/meals',
-  'My Workouts': '/plans',
+  'My Workouts': '/schedules',
   FAQ: '/faq',
   'Contact Us': '/contactus'
 }
