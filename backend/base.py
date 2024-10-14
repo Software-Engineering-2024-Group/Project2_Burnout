@@ -1148,7 +1148,7 @@ def createSchedule():
     week_schedule = data['weekSchedule']
 
     try:
-        mongo.db.schedules.insert_one(
+        mongo.schedules.insert_one(
             {'user_id': current_user, 'week_schedule': week_schedule}
         )
         response = {"status": "Schedule saved successfully"}
@@ -1165,7 +1165,7 @@ def createSchedule():
 def getSchedule():
     current_user = get_jwt_identity()
 
-    schedule = mongo.db.schedules.find_one({"user_id": current_user})
+    schedule = mongo.schedules.find_one({"user_id": current_user})
 
     if not schedule:
         return jsonify({"status": "No schedule found"}), 404

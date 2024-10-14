@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import {
   Container,
   Typography,
@@ -13,7 +14,6 @@ import NewSchedule from "./Task";
 
 const commonContainerStyles = {
   display: "flex",
-
   justifyContent: "center", // Center horizontally
   alignItems: "center", // Center vertically
 };
@@ -216,9 +216,35 @@ const Schedules = (props) => {
   const [editMode, setEditMode] = React.useState(false);
   const [addMode, setAddMode] = React.useState(false);
 
-  console.log("plans token: ", props.state);
-
+  console.log("plans token: ", props.state, WS);
   console.log("checking", editMode, addMode, day);
+
+  const handleCreateSchedule = (wk) => {
+    axios({
+      method: "post",
+      url: "/createSchedule",
+      headers: {
+        Authorization: "Bearer " + props.state.token,
+      },
+      data: {
+        weekSchedule: wk,
+      },
+    })
+      .then((response) => {
+        const res = response.data;
+        console.log(res);
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        }
+      });
+  };
+
+  console.log(handleCreateSchedule(WS));
+
   return (
     <>
       <WorkOutHeader />
@@ -317,5 +343,130 @@ const WeeklySchedules = (schedule) => {
     </Container>
   );
 };
+
+const WS = [
+  {
+    id: 1,
+    dayOfWeek: "Monday",
+    title: "Strength Workout 1",
+    exercises: [
+      {
+        exerciseTitle: "Bench Press",
+        sets: 3,
+        reps: 10,
+      },
+      {
+        exerciseTitle: "Deadlift",
+        sets: 3,
+        reps: 8,
+      },
+    ],
+    duration: 60,
+    description: "Focus on compound movements.",
+    videoLink: "http://example.com/strength-workout1-video",
+    CreateDate: "2024-10-10T10:00:00Z",
+  },
+  {
+    id: 2,
+    dayOfWeek: "Tuesday",
+    title: "Cardio Workout",
+    exercises: [
+      {
+        exerciseTitle: "Running",
+        durationInMinutes: 30,
+        intensity: "Moderate",
+      },
+      {
+        exerciseTitle: "Cycling",
+        durationInMinutes: 30,
+        intensity: "High",
+      },
+    ],
+    duration: 60,
+    description: "Aim for a steady pace during cardio.",
+    videoLink: "http://example.com/cardio-workout-video",
+    CreateDate: "2024-10-10T11:00:00Z",
+  },
+  {
+    id: 3,
+    dayOfWeek: "Wednesday",
+    title: "Rest Day",
+    exercises: [],
+    duration: 0,
+    description: "Take a day off for recovery.",
+    videoLink: null,
+    CreateDate: "2024-10-10T12:00:00Z",
+  },
+  {
+    id: 4,
+    dayOfWeek: "Thursday",
+    title: "Strength Workout 2",
+    exercises: [
+      {
+        exerciseTitle: "Squats",
+        sets: 4,
+        reps: 12,
+      },
+      {
+        exerciseTitle: "Pull-ups",
+        sets: 3,
+        reps: 8,
+      },
+    ],
+    duration: 60,
+    description: "Incorporate free weights for better strength.",
+    videoLink: "http://example.com/strength-workout2-video",
+    CreateDate: "2024-10-10T13:00:00Z",
+  },
+  {
+    id: 5,
+    dayOfWeek: "Friday",
+    title: "Flexibility and Core",
+    exercises: [
+      {
+        exerciseTitle: "Yoga",
+        durationInMinutes: 30,
+      },
+      {
+        exerciseTitle: "Plank",
+        durationInMinutes: 10,
+      },
+    ],
+    duration: 40,
+    description: "Focus on flexibility and core stability.",
+    videoLink: "http://example.com/flexibility-core-video",
+    CreateDate: "2024-10-10T14:00:00Z",
+  },
+  {
+    id: 6,
+    dayOfWeek: "Saturday",
+    title: "Outdoor Activity",
+    exercises: [
+      {
+        exerciseTitle: "Hiking",
+        durationInMinutes: 120,
+      },
+    ],
+    duration: 120,
+    description: "Enjoy the outdoors and stay active.",
+    videoLink: null,
+    CreateDate: "2024-10-10T15:00:00Z",
+  },
+  {
+    id: 7,
+    dayOfWeek: "Sunday",
+    title: "Active Recovery",
+    exercises: [
+      {
+        exerciseTitle: "Walking",
+        durationInMinutes: 30,
+      },
+    ],
+    duration: 30,
+    description: "Engage in light activity to aid recovery.",
+    videoLink: null,
+    CreateDate: "2024-10-10T16:00:00Z",
+  },
+];
 
 export default Schedules;
