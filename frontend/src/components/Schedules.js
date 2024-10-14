@@ -211,7 +211,7 @@ const DummyData = {
   },
 };
 
-const Plans = (props) => {
+const Schedules = (props) => {
   const [day, setDay] = React.useState("Monday");
   const [editMode, setEditMode] = React.useState(false);
   const [addMode, setAddMode] = React.useState(false);
@@ -286,7 +286,7 @@ const Plans = (props) => {
             ))}
           </Tabs>
           <Divider sx={{ width: "100%", margin: "8px 0" }} />
-          <Schedules schedule={DummyData.schedule[day]} />
+          <WeeklySchedules schedule={DummyData.schedule[day]} />
         </Box>
       </Container>
       <Footer />
@@ -310,7 +310,7 @@ const WorkOutHeader = () => {
   );
 };
 
-const Schedules = (schedule) => {
+const WeeklySchedules = (schedule) => {
   return (
     <Container>
       <Box>{JSON.stringify(schedule)}</Box>
@@ -318,4 +318,4 @@ const Schedules = (schedule) => {
   );
 };
 
-export default Plans;
+export default Schedules;
