@@ -1148,10 +1148,21 @@ def createSchedule():
     week_schedule = data['weekSchedule']
 
     try:
-        mongo.schedules.insert_one(
-            {'user_id': current_user, 'week_schedule': week_schedule}
+        # Replace the existing schedule if it exists, or insert a new one
+        result = mongo.schedules.replace_one(
+            {'user_id': current_user},  # Filter by user_id to check existence
+            # New or updated schedule data
+            {'user_id': current_user, 'week_schedule': week_schedule},
+            upsert=True  # Create a new document if none exists
         )
-        response = {"status": "Schedule saved successfully"}
+
+        if result.matched_count > 0:
+            # A schedule was replaced (old one existed)
+            response = {"status": "Schedule replaced successfully"}
+        else:
+            # No matching schedule found, so a new one was created
+            response = {"status": "Schedule created successfully"}
+
         status_code = 200
     except Exception as e:
         response = {"status": "Error", "message": str(e)}
@@ -1160,12 +1171,20 @@ def createSchedule():
     return jsonify(response), status_code
 
 
-@api.route('/getSchedule', methods=["GET"])
-@jwt_required
-def getSchedule():
+@api.route('/mySchedules', methods=["GET"])
+@jwt_required()  # Ensure the decorator has parentheses
+def my_schedules():
     current_user = get_jwt_identity()
 
-    schedule = mongo.schedules.find_one({"user_id": current_user})
+    if not current_user:
+        return jsonify({"status": "Unauthorized"}), 401
+
+    # Fetch the user's schedule from the database
+    schedule_cursor = mongo.schedules.find({"user_id": current_user})
+
+    # Convert the cursor to a list and serialize ObjectId
+    schedule = [{'id': str(item['_id']), 'data': item['data']}
+                for item in schedule_cursor]
 
     if not schedule:
         return jsonify({"status": "No schedule found"}), 404
