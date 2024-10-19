@@ -1158,7 +1158,7 @@ def createSchedule():
 
         if result.matched_count > 0:
             # A schedule was replaced (old one existed)
-            response = {"status": "Schedule replaced successfully"}
+            response = {"status": "Schedule updated successfully"}
         else:
             # No matching schedule found, so a new one was created
             response = {"status": "Schedule created successfully"}
@@ -1171,22 +1171,26 @@ def createSchedule():
     return jsonify(response), status_code
 
 
-@api.route('/mySchedules', methods=["GET"])
+@api.route('/mySchedule', methods=["GET"])
 @jwt_required()  # Ensure the decorator has parentheses
 def my_schedules():
-    current_user = get_jwt_identity()
+    try: 
+        current_user = get_jwt_identity()
+        user_schedules = mongo.schedules.find_one({"user_id": current_user})
+        
+        if user_schedules:
+            response = {
+                "status": "Success",
+                "data": user_schedules['week_schedule']
+            }
+            statusCode = 200
+        else:
+            response = {"status": "Error", "message": "No schedules found for the user."}
+            statusCode = 404
 
-    if not current_user:
-        return jsonify({"status": "Unauthorized"}), 401
+    except Exception as e:
+        response = {"status": "Error", "message": str(e)}
+        statusCode = 500
 
-    # Fetch the user's schedule from the database
-    schedule_cursor = mongo.schedules.find({"user_id": current_user})
-
-    # Convert the cursor to a list and serialize ObjectId
-    schedule = [{'id': str(item['_id']), 'data': item['data']}
-                for item in schedule_cursor]
-
-    if not schedule:
-        return jsonify({"status": "No schedule found"}), 404
-
-    return jsonify(schedule), 200
+    return jsonify(response), statusCode
+      
