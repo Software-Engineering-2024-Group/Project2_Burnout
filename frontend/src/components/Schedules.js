@@ -240,17 +240,17 @@ const Schedules = props => {
       })
   }
 
-  handleCreateSchedule(WS)
+  // handleCreateSchedule(WS)
 
   useEffect(() => {
     axios
-      .get('/mySchedules', {
+      .get('/mySchedule', {
         headers: {
           Authorization: 'Bearer ' + props.state.token // Ensure the token is valid
         }
       })
       .then(response => {
-        console.log('HAHAHAH', response.data)
+        console.log(response.data)
       })
       .catch(error => {
         console.error(
