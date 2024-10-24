@@ -1174,10 +1174,10 @@ def createSchedule():
 @api.route('/mySchedule', methods=["GET"])
 @jwt_required()  # Ensure the decorator has parentheses
 def my_schedules():
-    try: 
+    try:
         current_user = get_jwt_identity()
         user_schedules = mongo.schedules.find_one({"user_id": current_user})
-        
+
         if user_schedules:
             response = {
                 "status": "Success",
@@ -1185,7 +1185,8 @@ def my_schedules():
             }
             statusCode = 200
         else:
-            response = {"status": "Error", "message": "No schedules found for the user."}
+            response = {"status": "Error",
+                        "message": "No schedules found for the user."}
             statusCode = 404
 
     except Exception as e:
@@ -1193,4 +1194,38 @@ def my_schedules():
         statusCode = 500
 
     return jsonify(response), statusCode
-      
+
+
+@api.route('/deleteSchedule/<string:selected_day>/<string:workout_title>', methods=["DELETE"])
+@jwt_required()
+def deleteSchedule(selected_day, workout_title):
+    current_user = get_jwt_identity()
+
+    try:
+        # Find the user's schedule
+        user_schedule = mongo.schedules.find_one({"user_id": current_user})
+
+        if not user_schedule:
+            return jsonify({"status": "Error", "message": "No schedule found for the user."}), 404
+
+        # Filter out the workout to be removed from the specified day
+        week_schedule = user_schedule['week_schedule']
+        if selected_day in week_schedule:
+            # Remove the workout from the specified day's array
+            week_schedule[selected_day] = [
+                workout for workout in week_schedule[selected_day]
+                if workout['workoutTitle'] != workout_title
+            ]
+
+            # Update the user's schedule in the database
+            mongo.schedules.update_one(
+                {'user_id': current_user},
+                {'$set': {'week_schedule': week_schedule}}
+            )
+
+            return jsonify({"status": "Success", "message": "Workout removed successfully."}), 200
+        else:
+            return jsonify({"status": "Error", "message": f"No workouts found for {selected_day}."}), 404
+
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
